@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TestAppAI
 {
@@ -16,27 +18,38 @@ namespace TestAppAI
             _layers = layers;
         }
 
-        public double Reply
+        public List<double> GetResponse()
         {
-            get
-            {
-                return _layers.Last().Neurons.Last().Output;
-            }
+            var neuron = _layers.Last().Neurons.Select(x => x.Output);
+            return neuron.ToList();
         }
+
 
         public void StartTraining(List<TrainingData> expectedAnswer, int period)
         {
             for (int i = 0; i < period; i++)
             {
+                Console.WriteLine($"Эпоха {i}");
+
+                //int amountElements = expectedAnswer.Count / 20;
+
+                //var partsTraining = Enumerable.Range(0, amountElements)
+                //            .Select(i => expectedAnswer.Skip(i * 20).Take(20).ToList())
+                //            .ToList();
+
                 foreach (TrainingData data in expectedAnswer)
                 {
                     Start(data.Inbox);
 
                     List<double> preliminaryAnswers = _layers.Last().Neurons.Select(i => i.Output).ToList();
+                    if (data.ExpectedAnswer.Count != preliminaryAnswers.Count)
+                        throw new Exception("Количество выходных слоев не равно количеству ожидаемых ответов");
+
+                    double errorValue = 0.0;
                     for (int j = 0; j < preliminaryAnswers.Count; j++)
                     {
-                        double errorValue = preliminaryAnswers[j] - data.ExpectedAnswer[j];//e = y-d
-                        Console.WriteLine(errorValue);
+                        errorValue = preliminaryAnswers[j] - data.ExpectedAnswer[j];//e = y-d
+
                         Neuron neurons = _layers.Last().Neurons[j];
                         neurons.WeightAdjustment(errorValue);
                     }

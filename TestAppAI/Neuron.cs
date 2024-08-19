@@ -10,7 +10,7 @@ namespace TestAppAI
 {
     public class Neuron
     {
-        private const double _convergenceStep = 0.1;
+        private const double _convergenceStep = 0.2;
         public double LocalGradient {  get; private set; }
         public List<NeuronСonnection> Connection { get; private set; }
         public double Output { get; private set; }

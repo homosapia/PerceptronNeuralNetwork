@@ -56,7 +56,7 @@ namespace TestAppAI
             for (int j = 0; j < countNeurons; j++)
             {
                 NeuronСonnection neuronСonnection = new NeuronСonnection();
-                neuronСonnection.weight = (double)(new Random()).NextDouble();
+                neuronСonnection.weight = (j % 2 == 0) ? (double)(new Random()).NextDouble() : -(double)(new Random()).NextDouble();
                 neuronСonnections.Add(neuronСonnection);
             }
             return neuronСonnections;
